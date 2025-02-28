@@ -95,5 +95,4 @@ Please use the following tools to develop the project:
 - **Authorization:** Implement an authentication and authorization mechanism to secure the API endpoints. This is required for the frontend login functionality.
 
 
-> Development of the test must be done in a branch named `feature/[candidate's first name]_[candidate's last name]` (if there are conflicts, add the second last name), for example: `feature/juan_perez`. A pull request to the `master` branch of the repository should be made.
-
+> Development of the test must be done in a branch named `feature/[candidate's first name]_[candidate's last name]` (if there are conflicts, add the second last name), for example: `feature/juan_perez`. Instead of making a pull request to the master branch, the candidate must provide access to their repository where the take-home test is hosted using a token.
