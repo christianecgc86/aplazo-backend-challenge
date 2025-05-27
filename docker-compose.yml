@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    container_name: aplazo-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/aplazo
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: BVgfs4MHjFxUv9wS
+
+volumes:
+  db-data:

@@ -44,14 +44,12 @@ public class PurchaseServiceImpl implements PurchaseService {
     public PurchaseResponseDTO savePurchase(PurchaseRequestDTO purchaseRequestDTO) throws Exception {
         Client client = this.getClient(purchaseRequestDTO.getClientId());
 
-        if (Double.compare(purchaseRequestDTO.getPurchaseAmount(),client.getAvailableCreditAmount())>0)
-            throw new Exception("Insufficient funds in the client account");
-
         PaymentScheme paymentScheme = this.getPaymentScheme(client);
+
         Double purchaseAmount = purchaseRequestDTO.getPurchaseAmount();
         Purchase purchase = createEntity(client, paymentScheme, purchaseAmount);
         Purchase savedPurchase = purchaseRepository.save(purchase);
-        this.updateClientAvailableAmount(client, purchaseRequestDTO.getPurchaseAmount());
+        this.updateClientAvailableAmount(client, savedPurchase.getTotalAmount());
         return this.createResponse(savedPurchase);
     }
 
@@ -91,10 +89,13 @@ public class PurchaseServiceImpl implements PurchaseService {
         return optionalPaymentScheme.get();
     }
 
-    private Purchase createEntity(Client client, PaymentScheme paymentScheme, Double purchaseAmount) {
+    private Purchase createEntity(Client client, PaymentScheme paymentScheme, Double purchaseAmount) throws Exception {
         Double commissionAmount = purchaseAmount*paymentScheme.getInterestRate();
         Double totalAmount = commissionAmount + purchaseAmount;
         Double installmentAmount = totalAmount / paymentScheme.getNumberOfPayments();
+
+        if (Double.compare(totalAmount,client.getAvailableCreditAmount())>0)
+            throw new Exception("Insufficient funds in the client account");
 
         Date date = new Date();
         List<Date> dateList = this.getDueDates(paymentScheme.getNumberOfPayments(), paymentScheme.getFrequency());

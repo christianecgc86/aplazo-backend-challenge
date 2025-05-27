@@ -2,8 +2,10 @@ package com.aplazo.backend_challenge_demo;
 
 import com.aplazo.backend_challenge_demo.dto.PurchaseRequestDTO;
 import com.aplazo.backend_challenge_demo.model.Client;
+import com.aplazo.backend_challenge_demo.model.PaymentScheme;
 import com.aplazo.backend_challenge_demo.model.Purchase;
 import com.aplazo.backend_challenge_demo.repository.ClientRepository;
+import com.aplazo.backend_challenge_demo.repository.PaymentSchemeRepository;
 import com.aplazo.backend_challenge_demo.repository.PurchaseRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -12,10 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -23,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class PurchaseControllerTest {
 
 	@Autowired
@@ -33,6 +40,9 @@ class PurchaseControllerTest {
 
 	@MockitoBean
 	private PurchaseRepository purchaseRepository;
+
+	@MockitoBean
+	private PaymentSchemeRepository paymentSchemeRepository;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -55,9 +65,27 @@ class PurchaseControllerTest {
 
 		Purchase purchase = new Purchase();
 		purchase.setPurchaseId(1L);
+		purchase.setTotalAmount(11.6);
 
 		Mockito.when(clientRepository.findById(Mockito.any(Long.class)))
 				.thenReturn(optionalClient);
+
+		PaymentScheme paymentScheme1 = new PaymentScheme();
+		paymentScheme1.setPaymentSchemeId(1L);
+		paymentScheme1.setName("Scheme 1");
+		paymentScheme1.setNumberOfPayments(5);
+		paymentScheme1.setFrequency(14);
+		paymentScheme1.setInterestRate(0.13);
+
+		PaymentScheme paymentScheme2 = new PaymentScheme();
+		paymentScheme2.setPaymentSchemeId(2L);
+		paymentScheme2.setName("Scheme 2");
+		paymentScheme2.setNumberOfPayments(5);
+		paymentScheme2.setFrequency(14);
+		paymentScheme2.setInterestRate(0.13);
+
+		Mockito.when(paymentSchemeRepository.findById(1L)).thenReturn(Optional.of(paymentScheme1));
+		Mockito.when(paymentSchemeRepository.findById(2L)).thenReturn(Optional.of(paymentScheme2));
 
 		Mockito.when(clientRepository.saveAndFlush(Mockito.any(Client.class)))
 				.thenReturn(client);
@@ -122,6 +150,23 @@ class PurchaseControllerTest {
 
 		Mockito.when(clientRepository.findById(Mockito.any(Long.class)))
 				.thenReturn(optionalClient);
+
+		PaymentScheme paymentScheme1 = new PaymentScheme();
+		paymentScheme1.setPaymentSchemeId(1L);
+		paymentScheme1.setName("Scheme 1");
+		paymentScheme1.setNumberOfPayments(5);
+		paymentScheme1.setFrequency(14);
+		paymentScheme1.setInterestRate(0.13);
+
+		PaymentScheme paymentScheme2 = new PaymentScheme();
+		paymentScheme2.setPaymentSchemeId(2L);
+		paymentScheme2.setName("Scheme 2");
+		paymentScheme2.setNumberOfPayments(5);
+		paymentScheme2.setFrequency(14);
+		paymentScheme2.setInterestRate(0.13);
+
+		Mockito.when(paymentSchemeRepository.findById(1L)).thenReturn(Optional.of(paymentScheme1));
+		Mockito.when(paymentSchemeRepository.findById(2L)).thenReturn(Optional.of(paymentScheme2));
 
 		mockMvc.perform(post("/aplazo/purchases")
 						.contentType(MediaType.APPLICATION_JSON)

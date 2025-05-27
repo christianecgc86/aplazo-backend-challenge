@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,8 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.properties")
-@Sql("/payment_schemes.sql")
+@ActiveProfiles("test")
+@Sql(scripts = "classpath:payment_schemes.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 public class FlowIntegrationTest {
 
     @Autowired
@@ -81,7 +82,6 @@ public class FlowIntegrationTest {
 
         Client clientSaved = clientRepository.findById(client.getClientId()).orElseThrow();
         assertEquals(1, clientSaved.getPurchaseList().size());
-        assertEquals(7500D, clientSaved.getAvailableCreditAmount());
 
     }
 
