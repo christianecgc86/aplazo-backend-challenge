@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -32,6 +33,8 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public ClientResponseDTO saveClient(ClientRequestDTO clientRequestDTO) throws Exception {
         Client client = createEntity(clientRequestDTO);
+
+        validateIfClientExists(client);
 
         int age = calculateAge(clientRequestDTO.getBirthdate());
         validateAgeAndAssignCreditAmount(age, client);
@@ -88,6 +91,13 @@ public class ClientServiceImpl implements ClientService {
         }
 
         client.setAvailableCreditAmount(client.getAssignedCreditAmount());
+    }
+
+    private void validateIfClientExists(Client client) throws Exception {
+        List<Client> list = clientRepository.findByFirstNameAndLastNameAndBirthdate(client.getFirstName(), client.getLastName(), client.getBirthdate());
+        if (list!=null && !list.isEmpty()) {
+            throw new Exception("Client with the same data was found in DB");
+        }
     }
 
 }

@@ -29,9 +29,9 @@ public class ClientController {
     public ResponseEntity<?> saveClient(@Valid @RequestBody ClientRequestDTO clientRequestDTO, BindingResult result) {
         try {
             logger.info("Saving Client Request: {}", clientRequestDTO);
-            if (result.hasErrors()) {
+            if (result.hasErrors())
                 return clientService.getValidationError(result);
-            }
+
             ClientResponseDTO clientResponseDTO = clientService.saveClient(clientRequestDTO);
             logger.info("Saving Client Response: {}", clientResponseDTO);
             return ResponseEntity.ok(clientResponseDTO);
